@@ -9,14 +9,14 @@
 'use strict';
 
 const createCacheKeyFunction = require('fbjs-scripts/jest/createCacheKeyFunction');
-const path = require('path');
+const path = require('node-haste/lib/fastpath');
 const transformer = require('../packager/transformer.js');
 
 module.exports = {
   process(src, file) {
     // Don't transform node_modules, except react-tools which includes the
     // untransformed copy of React
-    if (file.match(/node_modules\/(?!react-tools\/)/)) {
+    if (file.match(/node_modules[\\\/](?!react-tools)/)) {
       return src;
     }
 

@@ -19,7 +19,7 @@ describe('InteractionManager', () => {
 
   beforeEach(() => {
     jest.resetModuleRegistry();
-    InteractionManager = require('InteractionManager');
+    InteractionManager = require('../InteractionManager');
 
     interactionStart = jest.genMockFunction();
     interactionComplete = jest.genMockFunction();
@@ -143,7 +143,7 @@ describe('promise tasks', () => {
   }
   beforeEach(() => {
     jest.resetModuleRegistry();
-    InteractionManager = require('InteractionManager');
+    InteractionManager = require('../InteractionManager');
     BatchedBridge = require('BatchedBridge');
     sequenceId = 0;
   });

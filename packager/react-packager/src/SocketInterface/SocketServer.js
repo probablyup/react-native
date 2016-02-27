@@ -8,7 +8,6 @@
  */
 'use strict';
 
-const Promise = require('promise');
 const Server = require('../Server');
 const bser = require('bser');
 const debug = require('debug')('ReactNativePackager:SocketServer');
@@ -172,8 +171,11 @@ class SocketServer {
       debug('server got ipc message', message);
 
       const {options, sockPath} = message.data;
-      // regexp doesn't naturally serialize to json.
-      options.blacklistRE = new RegExp(options.blacklistRE.source);
+
+      if (options.blacklistRE) {
+        // regexp doesn't naturally serialize to json.
+        options.blacklistRE = new RegExp(options.blacklistRE.source);
+      }
 
       new SocketServer(sockPath, options).onReady().then(
         () => {
@@ -195,7 +197,7 @@ class SocketServer {
             throw error;
           }
         }
-      ).done();
+      );
     });
   }
 }

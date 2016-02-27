@@ -13,11 +13,10 @@ const AssetServer = require('../AssetServer');
 const FileWatcher = require('node-haste').FileWatcher;
 const getPlatformExtension = require('node-haste').getPlatformExtension;
 const Bundler = require('../Bundler');
-const Promise = require('promise');
 
 const _ = require('underscore');
 const declareOpts = require('../lib/declareOpts');
-const path = require('path');
+const path = require('node-haste/lib/fastpath');
 const url = require('url');
 
 const validateOpts = declareOpts({
@@ -392,6 +391,7 @@ class Server {
     const urlObj = url.parse(req.url, true);
     const assetPath = urlObj.pathname.match(/^\/assets\/(.+)$/);
     const assetEvent = Activity.startEvent(`processing asset request ${assetPath[1]}`);
+    const doneFunc = () => Activity.endEvent(assetEvent);
     this._assetServer.get(assetPath[1], urlObj.query.platform)
       .then(
         data => res.end(data),
@@ -400,7 +400,7 @@ class Server {
           res.writeHead('404');
           res.end('Asset not found');
         }
-      ).done(() => Activity.endEvent(assetEvent));
+      ).then(doneFunc, doneFunc);
   }
 
   processRequest(req, res, next) {
@@ -472,7 +472,7 @@ class Server {
         }
       },
       this._handleError.bind(this, res, optionsJson)
-    ).done();
+    );
   }
 
   _handleError(res, bundleID, error) {

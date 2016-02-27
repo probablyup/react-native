@@ -11,7 +11,7 @@
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
-const Promise = require('promise');
+const denodeify = require('denodeify');
 const ProgressBar = require('progress');
 const Cache = require('node-haste').Cache;
 const Transformer = require('../JSTransformer');
@@ -25,8 +25,8 @@ const declareOpts = require('../lib/declareOpts');
 const imageSize = require('image-size');
 const version = require('../../../../package.json').version;
 
-const sizeOf = Promise.denodeify(imageSize);
-const readFile = Promise.denodeify(fs.readFile);
+const sizeOf = denodeify(imageSize);
+const readFile = denodeify(fs.readFile);
 
 const noop = () => {};
 

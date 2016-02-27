@@ -9,11 +9,11 @@
 'use strict';
 
 jest.dontMock('../')
-  .dontMock('underscore');
+    .dontMock('joi')
+    .dontMock('underscore');
 
 jest.mock('path');
 
-const Promise = require('promise');
 const Resolver = require('../');
 
 const path = require('path');
@@ -23,6 +23,12 @@ let DependencyGraph = jest.genMockFn();
 jest.setMock('node-haste', DependencyGraph);
 let Module;
 let Polyfill;
+
+const testConfig = {
+  assetExts: [],
+  cache: {},
+  fileWatcher: {},
+};
 
 describe('Resolver', function() {
   beforeEach(function() {
@@ -84,7 +90,8 @@ describe('Resolver', function() {
       var deps = [module];
 
       var depResolver = new Resolver({
-        projectRoot: '/root',
+        ...testConfig,
+        projectRoots: ['/root'],
       });
 
       DependencyGraph.prototype.getDependencies.mockImpl(function() {
@@ -175,7 +182,8 @@ describe('Resolver', function() {
       var deps = [module];
 
       var depResolver = new Resolver({
-        projectRoot: '/root',
+        ...testConfig,
+        projectRoots: ['/root'],
       });
 
       DependencyGraph.prototype.getDependencies.mockImpl(function() {
@@ -203,7 +211,8 @@ describe('Resolver', function() {
       var deps = [module];
 
       var depResolver = new Resolver({
-        projectRoot: '/root',
+        ...testConfig,
+        projectRoots: ['/root'],
         polyfillModuleNames: ['some module'],
       });
 
@@ -239,7 +248,8 @@ describe('Resolver', function() {
   describe('wrapModule', function() {
     pit('should resolve modules', function() {
       var depResolver = new Resolver({
-        projectRoot: '/root',
+        ...testConfig,
+        projectRoots: ['/root'],
       });
 
       var dependencies = ['x', 'y', 'z', 'a', 'b'];
@@ -1047,7 +1057,8 @@ describe('Resolver', function() {
 
     pit('should resolve polyfills', function () {
       const depResolver = new Resolver({
-        projectRoot: '/root',
+        ...testConfig,
+        projectRoots: ['/root'],
       });
       const polyfill = createPolyfill('test polyfill', []);
       const code = [

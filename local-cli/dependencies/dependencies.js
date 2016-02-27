@@ -12,7 +12,7 @@ const fs = require('fs');
 const log = require('../util/log').out('dependencies');
 const parseCommandLine = require('../util/parseCommandLine');
 const path = require('path');
-const Promise = require('promise');
+const denodeify = require('denodeify');
 const ReactPackager = require('../../packager/react-packager');
 
 /**
@@ -107,7 +107,7 @@ function _dependencies(argv, config, resolve, reject) {
           }
         });
         return writeToFile
-          ? Promise.denodeify(outStream.end).bind(outStream)()
+          ? denodeify(outStream.end).bind(outStream)()
           : Promise.resolve();
         // log('Wrote dependencies to output file');
       });

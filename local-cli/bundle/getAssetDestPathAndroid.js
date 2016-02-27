@@ -8,7 +8,7 @@
  */
 'use strict';
 
-const path = require('path');
+const path = require('node-haste/lib/fastpath');
 const assetPathUtils = require('./assetPathUtils');
 
 function getAssetDestPathAndroid(asset, scale) {

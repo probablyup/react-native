@@ -14,7 +14,6 @@ const Activity = require('../Activity');
 const DependencyGraph = require('node-haste');
 const replacePatterns = require('node-haste').replacePatterns;
 const declareOpts = require('../lib/declareOpts');
-const Promise = require('promise');
 
 const validateOpts = declareOpts({
   projectRoots: {

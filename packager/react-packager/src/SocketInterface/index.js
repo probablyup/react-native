@@ -8,7 +8,6 @@
  */
 'use strict';
 
-const Promise = require('promise');
 const SocketClient = require('./SocketClient');
 const SocketServer = require('./SocketServer');
 const _ = require('underscore');
@@ -16,9 +15,9 @@ const crypto = require('crypto');
 const debug = require('debug')('ReactNativePackager:SocketInterface');
 const fs = require('fs');
 const net = require('net');
-const path = require('path');
+const path = require('node-haste/lib/fastpath');
 const tmpdir = require('os').tmpdir();
-const {spawn} = require('child_process');
+const {fork} = require('child_process');
 
 const CREATE_SERVER_TIMEOUT = 5 * 60 * 1000;
 
@@ -37,16 +36,14 @@ const SocketInterface = {
         }
       });
 
-      let sockPath = path.join(
-        tmpdir,
-        'react-packager-' + hash.digest('hex')
-      );
+      let sockPath;
+      const name ='react-packager-' + hash.digest('hex');
       if (process.platform === 'win32'){
         // on Windows, use a named pipe, convert sockPath into a valid pipe name
         // based on https://gist.github.com/domenic/2790533
-        sockPath = sockPath.replace(/^\//, '')
-        sockPath = sockPath.replace(/\//g, '-')
-        sockPath = '\\\\.\\pipe\\' + sockPath
+        sockPath = '\\\\.\\pipe\\' + name;
+      } else {
+        sockPath = path.join(tmpdir, name);
       }
 
       if (existsSync(sockPath)) {
@@ -104,15 +101,9 @@ function createServer(resolve, reject, options, sockPath) {
 
   // We have to go through the main entry point to make sure
   // we go through the babel require hook.
-  const child = spawn(
-    process.execPath,
-    [path.join(__dirname, '..', '..', 'index.js')],
-    {
-      detached: true,
-      env: env,
-      stdio: ['ipc', log, log]
-    }
-  );
+  const child = fork(path.join(__dirname, '..', '..', 'index.js'), [], {
+    env: env,
+  });
 
   child.unref();
 

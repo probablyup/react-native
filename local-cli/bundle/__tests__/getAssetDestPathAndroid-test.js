@@ -15,6 +15,11 @@ jest
 const getAssetDestPathAndroid = require('../getAssetDestPathAndroid');
 
 describe('getAssetDestPathAndroid', () => {
+  const platform = process.platform;
+
+  beforeEach(() => process.platform = 'linux');
+  afterEach(() => process.platform = platform);
+
   it('should use the right destination folder', () => {
     const asset = {
       name: 'icon',
@@ -35,7 +40,7 @@ describe('getAssetDestPathAndroid', () => {
     expectDestPathForScaleToStartWith(4, 'drawable-xxxhdpi');
   });
 
-  it('should lowercase path', () => {
+  it('should lowercase path (posix)', () => {
     const asset = {
       name: 'Icon',
       type: 'png',
@@ -44,6 +49,19 @@ describe('getAssetDestPathAndroid', () => {
 
     expect(getAssetDestPathAndroid(asset, 1)).toBe(
       'drawable-mdpi/app_test_icon.png'
+    );
+  });
+
+  it('should lowercase path (win32)', () => {
+    process.platform = 'win32';
+    const asset = {
+      name: 'Icon',
+      type: 'png',
+      httpServerLocation: '/assets/App/Test',
+    };
+
+    expect(getAssetDestPathAndroid(asset, 1)).toBe(
+      'drawable-mdpi\\app_test_icon.png'
     );
   });
 

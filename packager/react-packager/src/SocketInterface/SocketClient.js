@@ -10,12 +10,11 @@
 
 const Bundle = require('../Bundler/Bundle');
 const PrepackBundle = require('../Bundler/PrepackBundle');
-const Promise = require('promise');
 const bser = require('bser');
 const debug = require('debug')('ReactNativePackager:SocketClient');
 const fs = require('fs');
 const net = require('net');
-const path  = require('path');
+const path = require('node-haste/lib/fastpath');
 const tmpdir = require('os').tmpdir();
 
 const LOG_PATH = path.join(tmpdir, 'react-packager.log');

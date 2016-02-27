@@ -13,7 +13,12 @@ jest.dontMock('../getAssetDestPathIOS');
 const getAssetDestPathIOS = require('../getAssetDestPathIOS');
 
 describe('getAssetDestPathIOS', () => {
-  it('should build correct path', () => {
+  const platform = process.platform;
+
+  beforeEach(() => process.platform = 'linux');
+  afterEach(() => process.platform = platform);
+
+  it('should build correct path (posix)', () => {
     const asset = {
       name: 'icon',
       type: 'png',
@@ -23,7 +28,18 @@ describe('getAssetDestPathIOS', () => {
     expect(getAssetDestPathIOS(asset, 1)).toBe('assets/test/icon.png');
   });
 
-  it('should consider scale', () => {
+  it('should build correct path (win32)', () => {
+    process.platform = 'win32';
+    const asset = {
+      name: 'icon',
+      type: 'png',
+      httpServerLocation: '/assets/test',
+    };
+
+    expect(getAssetDestPathIOS(asset, 1)).toBe('assets\\test\\icon.png');
+  });
+
+  it('should consider scale (posix)', () => {
     const asset = {
       name: 'icon',
       type: 'png',
@@ -32,5 +48,17 @@ describe('getAssetDestPathIOS', () => {
 
     expect(getAssetDestPathIOS(asset, 2)).toBe('assets/test/icon@2x.png');
     expect(getAssetDestPathIOS(asset, 3)).toBe('assets/test/icon@3x.png');
+  });
+
+  it('should consider scale (win32)', () => {
+    process.platform = 'win32';
+    const asset = {
+      name: 'icon',
+      type: 'png',
+      httpServerLocation: '/assets/test',
+    };
+
+    expect(getAssetDestPathIOS(asset, 2)).toBe('assets\\test\\icon@2x.png');
+    expect(getAssetDestPathIOS(asset, 3)).toBe('assets\\test\\icon@3x.png');
   });
 });

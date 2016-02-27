@@ -9,17 +9,16 @@
 'use strict';
 
 jest.setMock('worker-farm', function() { return () => {}; })
-    .dontMock('node-haste/node_modules/throat')
+    .dontMock('throat')
     .dontMock('os')
     .dontMock('underscore')
     .dontMock('path')
     .dontMock('url')
+    .dontMock('joi')
     .setMock('timers', { setImmediate: (fn) => setTimeout(fn, 0) })
     .setMock('uglify-js')
     .dontMock('../')
     .setMock('crypto');
-
-const Promise = require('promise');
 
 var Bundler = require('../../Bundler');
 var Server = require('../');
@@ -33,9 +32,7 @@ describe('processRequest', () => {
 
   const options = {
      projectRoots: ['root'],
-     blacklistRE: null,
-     cacheVersion: null,
-     polyfillModuleNames: null
+     polyfillModuleNames: []
   };
 
   const makeRequest = (reqHandler, requrl, reqOptions) => new Promise(resolve =>
@@ -221,11 +218,12 @@ describe('processRequest', () => {
 
       requestHandler = server.processRequest.bind(server);
 
-      makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
-        .done(response => {
-          expect(response.body).toEqual('this is the first source');
-          expect(bundleFunc.mock.calls.length).toBe(1);
-        });
+      const doneFunc = response => {
+        expect(response.body).toEqual('this is the first source');
+        expect(bundleFunc.mock.calls.length).toBe(1);
+      };
+
+      makeRequest(requestHandler, 'mybundle.bundle?runModule=true').then(doneFunc, doneFunc);
 
       jest.runAllTicks();
 
@@ -235,10 +233,9 @@ describe('processRequest', () => {
 
       expect(bundleFunc.mock.calls.length).toBe(2);
 
-      makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
-        .done(response =>
-          expect(response.body).toEqual('this is the rebuilt source')
-        );
+      const doneFunc2 = response => expect(response.body).toEqual('this is the rebuilt source');
+
+      makeRequest(requestHandler, 'mybundle.bundle?runModule=true').then(doneFunc2, doneFunc2);
       jest.runAllTicks();
     });
 
@@ -267,11 +264,11 @@ describe('processRequest', () => {
 
       requestHandler = server.processRequest.bind(server);
 
-      makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
-        .done(response => {
-          expect(response.body).toEqual('this is the first source');
-          expect(bundleFunc.mock.calls.length).toBe(1);
-        });
+      const doneFunc = response => {
+        expect(response.body).toEqual('this is the first source');
+        expect(bundleFunc.mock.calls.length).toBe(1);
+      };
+      makeRequest(requestHandler, 'mybundle.bundle?runModule=true').then(doneFunc, doneFunc);
 
       jest.runAllTicks();
 
@@ -282,11 +279,11 @@ describe('processRequest', () => {
       expect(bundleFunc.mock.calls.length).toBe(1);
       server.setHMRFileChangeListener(null);
 
-      makeRequest(requestHandler, 'mybundle.bundle?runModule=true')
-        .done(response => {
-          expect(response.body).toEqual('this is the rebuilt source');
-          expect(bundleFunc.mock.calls.length).toBe(2);
-        });
+      const doneFunc2 = response => {
+        expect(response.body).toEqual('this is the rebuilt source');
+        expect(bundleFunc.mock.calls.length).toBe(2);
+      };
+      makeRequest(requestHandler, 'mybundle.bundle?runModule=true').then(doneFunc2, doneFunc2);
       jest.runAllTicks();
     });
   });

@@ -30,7 +30,7 @@ describe('TaskQueue', () => {
   beforeEach(() => {
     jest.resetModuleRegistry();
     onMoreTasks = jest.genMockFunction();
-    const TaskQueue = require('TaskQueue');
+    const TaskQueue = require('../TaskQueue');
     taskQueue = new TaskQueue({onMoreTasks});
     sequenceId = 0;
   });

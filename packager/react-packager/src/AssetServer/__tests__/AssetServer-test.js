@@ -2,14 +2,13 @@
 
 jest
   .dontMock('node-haste/lib/lib/getPlatformExtension')
-  .dontMock('node-haste/node_modules/throat')
+  .dontMock('throat')
+  .dontMock('joi')
   .dontMock('../');
 
 jest
   .mock('crypto')
   .mock('fs');
-
-const Promise = require('promise');
 
 var AssetServer = require('../');
 var crypto = require('crypto');

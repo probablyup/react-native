@@ -11,7 +11,8 @@
 jest.setMock('uglify-js')
     .mock('net')
     .mock('fs')
-    .dontMock('node-haste/node_modules/throat')
+    .dontMock('throat')
+    .dontMock('joi')
     .dontMock('../SocketServer');
 
 var PackagerServer = require('../../Server');
@@ -23,6 +24,11 @@ describe('SocketServer', () => {
   let netServer;
   let bunser;
   let processOn;
+
+  const baseConfig = {
+    assetServer: {},
+    fileWatcher: {},
+  };
 
   beforeEach(() => {
     const {EventEmitter} = require.requireActual('events');
@@ -44,7 +50,7 @@ describe('SocketServer', () => {
   });
 
   pit('create a server', () => {
-    const server = new SocketServer('/sock', { projectRoots: ['/root'] });
+    const server = new SocketServer('/sock', {...baseConfig, projectRoots: ['/root'] });
     netServer.emit('listening');
     return server.onReady().then(s => {
       expect(s).toBe(server);
@@ -53,7 +59,7 @@ describe('SocketServer', () => {
   });
 
   pit('handles getDependencies message', () => {
-    const server = new SocketServer('/sock', { projectRoots: ['/root'] });
+    const server = new SocketServer('/sock', {...baseConfig, projectRoots: ['/root'] });
     netServer.emit('listening');
     return server.onReady().then(() => {
       const sock = { on: jest.genMockFn(), write: jest.genMockFn() };
@@ -74,7 +80,7 @@ describe('SocketServer', () => {
   });
 
   pit('handles buildBundle message', () => {
-    const server = new SocketServer('/sock', { projectRoots: ['/root'] });
+    const server = new SocketServer('/sock', {...baseConfig, projectRoots: ['/root'] });
     netServer.emit('listening');
     return server.onReady().then(() => {
       const sock = { on: jest.genMockFn(), write: jest.genMockFn() };

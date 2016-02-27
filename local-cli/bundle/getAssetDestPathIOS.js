@@ -8,7 +8,7 @@
  */
 'use strict';
 
-const path = require('path');
+const path = require('node-haste/lib/fastpath');
 
 function getAssetDestPathIOS(asset, scale) {
   const suffix = scale === 1 ? '' : '@' + scale + 'x';
